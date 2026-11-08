@@ -42,11 +42,14 @@
 
 ## 直接使用（免安装，x64）
 
-便携版同样在本地打包（`npm run pack`，产物在 `dist/Album`）：
+便携版已上传到 [Releases · v1.0.0](https://github.com/173433540/Album/releases/tag/v1.0.0)：
 
-```
-dist\Album\Album.exe
-```
+| 文件 | 大小 | 说明 |
+| --- | --- | --- |
+| [`Album_Windows_x64_Portable.7z`](https://github.com/173433540/Album/releases/download/v1.0.0/Album_Windows_x64_Portable.7z) | 75.4 MB | 需要 7-Zip 等解压工具 |
+| [`Album_Windows_x64_Portable.zip`](https://github.com/173433540/Album/releases/download/v1.0.0/Album_Windows_x64_Portable.zip) | 116.0 MB | Windows 资源管理器直接解压 |
+
+解压后得到 `Album` 文件夹，双击里面的 `Album.exe` 即可（本机对应 `C:\AI\Album\Album`、`C:\AI\Album\Album.7z`、`C:\AI\Album\Album.zip`）。也可以自行打包：`npm run pack`，产物在 `dist/Album`。
 
 双击运行 → 点右上「更多」→「添加文件夹…」（或首次启动的提示按钮）→ 在软件内置的文件夹浏览器里进入目录、预览图片，再点「添加此文件夹」，等待扫描完成即可。
 添加后可在「更多 → 文件夹…」里查看所有已添加的文件夹、单独重扫或移除；点击某个文件夹的「查看」即可只看该文件夹里的照片和视频。
