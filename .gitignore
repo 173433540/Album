@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.testdata/
+.stressdata/
+*.log
+Thumbs.db

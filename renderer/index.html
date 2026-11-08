@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' thumb: photo: preview: probe: data: blob:; media-src 'self' video: blob:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'">
+  <title>Album</title>
+  <link rel="stylesheet" href="css/app.css">
+  <script src="js/theme-boot.js"></script>
+</head>
+<body>
+
+<div id="splash">
+  <div class="splash-stage">
+    <img class="splash-icon" src="../assets/app-256.png" alt="">
+    <svg class="splash-ink" viewBox="0 0 240 240" aria-hidden="true"></svg>
+  </div>
+</div>
+
+<div id="scanBar"></div>
+
+<header id="topbar">
+  <div class="title-area">
+    <div class="year-line">
+      <button id="prevYear" class="ghost-btn" title="上一年（Ctrl+←）">‹</button>
+      <h1 id="yearLabel">全部照片</h1>
+      <button id="nextYear" class="ghost-btn" title="下一年（Ctrl+→）">›</button>
+    </div>
+    <div id="subLabel" class="sub">正在读取…</div>
+  </div>
+
+  <div class="toolbar no-drag">
+    <button id="btnSearch" class="icon-btn" title="搜索（Ctrl+F）">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+    </button>
+    <button id="btnAlbums" class="icon-btn" title="相册分类（Ctrl+B）">
+      <svg viewBox="0 0 24 24"><rect x="3.4" y="7.2" width="12.4" height="12.2" rx="2.2"></rect><path d="M7.6 7.2V5.6A1.8 1.8 0 0 1 9.4 3.8h9.2a1.8 1.8 0 0 1 1.8 1.8v9.2a1.8 1.8 0 0 1-1.8 1.8h-1.4"></path><path d="M6.4 12.4l3.2 3 2-1.8 2.6 2.4"></path></svg>
+    </button>
+    <button id="btnMore" class="icon-btn" title="更多">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="5.5" r="1.6" fill="currentColor" stroke="none"></circle><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"></circle><circle cx="12" cy="18.5" r="1.6" fill="currentColor" stroke="none"></circle></svg>
+    </button>
+  </div>
+</header>
+
+<div id="chips"></div>
+
+<main id="scroller">
+  <div id="grid"></div>
+
+  <div id="empty" class="empty hidden">
+    <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#3a3a40" stroke-width="1.3">
+      <rect x="3" y="5" width="18" height="14" rx="2.5"></rect>
+      <circle cx="8.5" cy="10" r="1.6"></circle>
+      <path d="M3.5 16.5l4.6-4a1.6 1.6 0 0 1 2.1 0l3 2.6 2-1.7a1.6 1.6 0 0 1 2 0l3.3 3"></path>
+    </svg>
+    <div>
+      <h2 id="emptyTitle">还没有照片</h2>
+      <p id="emptyDesc">选择一个本地文件夹，相册会扫描其中的图片并自动按拍摄时间整理。<br>所有照片只保存在你的电脑上。</p>
+    </div>
+    <button id="emptyPick" class="primary-btn">选择文件夹</button>
+    <div id="emptyFolders" class="sub" style="font-size:11.5px"></div>
+  </div>
+
+  <div id="loading" class="hidden"><span class="spinner"></span><span id="loadingText">正在载入…</span></div>
+</main>
+
+<nav id="timeline"></nav>
+<div id="tlPanel" class="hidden"></div>
+
+<div id="sheetMask"></div>
+<section id="sheet" aria-label="搜索与筛选">
+  <div class="sheet-row">
+    <label>文件名</label>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input id="q" type="text" placeholder="搜索文件名，例如 IMG_2026" autocomplete="off">
+    </div>
+  </div>
+
+  <div class="sheet-row">
+    <label>时间</label>
+    <div class="sheet-grid">
+      <select id="fYear"><option value="">全部年份</option></select>
+      <select id="fMonth"><option value="">全部月份</option></select>
+    </div>
+  </div>
+
+  <div class="sheet-row">
+    <label>类型</label>
+    <div class="seg" id="fMedia">
+      <button data-media="" class="on">全部媒体</button>
+      <button data-media="photo">照片</button>
+      <button data-media="video">视频</button>
+      <button data-media="gif">动图</button>
+    </div>
+  </div>
+
+  <div class="sheet-row">
+    <label>格式</label>
+    <div class="sheet-grid">
+      <select id="fExt"><option value="">全部格式</option></select>
+      <input id="fMin" type="number" min="0" step="0.5" placeholder="最小 MB">
+      <input id="fMax" type="number" min="0" step="0.5" placeholder="最大 MB">
+    </div>
+  </div>
+
+  <div class="sheet-row">
+    <label>排序</label>
+    <div class="sheet-grid">
+      <select id="fSort">
+        <option value="taken">按拍摄时间</option>
+        <option value="created">按创建时间</option>
+        <option value="modified">按修改时间</option>
+        <option value="name">按文件名</option>
+        <option value="size">按文件大小</option>
+      </select>
+      <div class="seg" id="fDir">
+        <button data-dir="desc" class="on">倒序</button>
+        <button data-dir="asc">正序</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet-actions">
+    <button id="btnClearFilter" class="ghost-action">清除全部条件</button>
+    <button id="btnCloseSheet" class="ghost-action">完成</button>
+  </div>
+</section>
+
+<div id="menu"></div>
+
+<section id="folderBrowser" aria-label="添加文件夹">
+  <div class="fb-head">
+    <div class="fb-title">添加文件夹</div>
+    <div class="fb-path" id="fbPath">—</div>
+    <div class="fb-actions">
+      <button id="fbUp" class="ghost-action" disabled>上一级</button>
+      <button id="fbAdd" class="primary-btn">添加此文件夹</button>
+      <button id="fbClose" class="icon-btn" title="关闭（Esc）">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+  <div class="fb-sub" id="fbSub">点击左侧文件夹进入，右侧可预览图片；添加后会扫描该文件夹及所有子文件夹。</div>
+  <div class="fb-body">
+    <aside class="fb-side">
+      <div class="fb-side-title">磁盘</div>
+      <div id="fbRoots" class="fb-roots"></div>
+      <div class="fb-side-title">文件夹</div>
+      <div id="fbDirs"></div>
+    </aside>
+    <div class="fb-main" id="fbMain">
+      <div id="fbGrid" class="fb-grid"></div>
+      <div id="fbEmpty" class="fb-empty hidden">这个文件夹里没有可预览的照片或视频</div>
+      <button id="fbMore" class="ghost-action fb-more hidden">显示更多</button>
+    </div>
+  </div>
+  <div id="fbPreview" class="fb-preview hidden">
+    <button id="fbPreviewClose" class="icon-btn" title="关闭预览（Esc）">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+    </button>
+    <img id="fbPreviewImg" alt="">
+    <div id="fbPreviewMeta" class="fb-preview-meta"></div>
+  </div>
+</section>
+
+<section id="albumsPanel" aria-label="相册分类">
+  <div class="ap-head">
+    <div class="ap-title">相册</div>
+    <button id="apClose" class="icon-btn" title="关闭（Esc）">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+    </button>
+  </div>
+  <div class="ap-tools">
+    <div class="ap-search">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><line x1="16.5" y1="16.5" x2="21" y2="21"></line></svg>
+      <input id="apSearch" type="text" placeholder="搜索相册名称" autocomplete="off">
+    </div>
+    <select id="apSort" title="相册排序">
+      <option value="created">按创建时间</option>
+      <option value="name">按名称</option>
+      <option value="count">按数量</option>
+    </select>
+    <button id="apNew" class="primary-btn">新建相册</button>
+  </div>
+  <div class="ap-body">
+    <div id="apSmart" class="ap-smart"></div>
+    <div id="apGrid" class="ap-grid"></div>
+    <div id="apEmpty" class="ap-empty hidden">还没有相册</div>
+  </div>
+  <div class="ap-hint">把照片拖到相册上即可添加 · 右键照片或全屏点 ⊕ 也能加入相册</div>
+</section>
+
+<div id="selectBar">
+  <span id="selCount">已选 0 项</span>
+  <button id="selAlbum" class="primary-btn" disabled>添加到相册</button>
+  <button id="selCancel" class="ghost-action">取消</button>
+</div>
+
+<section id="videoPlayer" aria-label="视频播放器">
+  <div class="vp-top">
+    <div class="vp-title">
+      <div class="v-title" id="vpName">—</div>
+      <div class="v-meta" id="vpMeta">—</div>
+    </div>
+    <div class="v-actions">
+      <button id="vpOpenSys" class="icon-btn" title="用系统播放器打开">
+        <svg viewBox="0 0 24 24"><path d="M14 4h6v6"></path><path d="M20 4l-8.5 8.5"></path><path d="M19 14v4.5A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-11A1.5 1.5 0 0 1 6.5 6H11"></path></svg>
+      </button>
+      <button id="vpClose" class="icon-btn" title="关闭（Esc）">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+  <div class="vp-stage">
+    <video id="vpVideo" controls playsinline preload="metadata"></video>
+    <div class="vp-error" id="vpError"></div>
+  </div>
+  <div class="vp-hint">空格 播放 / 暂停 · Esc 关闭</div>
+</section>
+
+<section id="viewer">
+  <div class="stage" id="stage">
+    <img id="vImage" alt="">
+  </div>
+
+  <div class="v-top">
+    <div>
+      <div class="v-title" id="vName">—</div>
+      <div class="v-meta" id="vMeta">—</div>
+    </div>
+    <div class="v-actions">
+      <button id="vAlbum" class="icon-btn circle-plus" title="添加到相册（A）">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><line x1="12" y1="7.8" x2="12" y2="16.2"></line><line x1="7.8" y1="12" x2="16.2" y2="12"></line></svg>
+      </button>
+      <button id="vInfo" class="icon-btn" title="详细信息（I）">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><line x1="12" y1="11" x2="12" y2="16.5"></line><circle cx="12" cy="8" r="0.9" fill="currentColor" stroke="none"></circle></svg>
+      </button>
+      <button id="vOpen" class="icon-btn" title="用系统看图器打开（Enter）">
+        <svg viewBox="0 0 24 24"><path d="M14 4h6v6"></path><path d="M20 4l-8.5 8.5"></path><path d="M19 14v4.5A1.5 1.5 0 0 1 17.5 20h-11A1.5 1.5 0 0 1 5 18.5v-11A1.5 1.5 0 0 1 6.5 6H11"></path></svg>
+      </button>
+      <button id="vDelete" class="icon-btn" title="删除（Delete）">
+        <svg viewBox="0 0 24 24"><path d="M5 7h14"></path><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"></path><path d="M6.5 7l.8 11.2A1.8 1.8 0 0 0 9.1 20h5.8a1.8 1.8 0 0 0 1.8-1.8L17.5 7"></path></svg>
+      </button>
+      <button id="vClose" class="icon-btn" title="关闭（Esc）">
+        <svg viewBox="0 0 24 24"><line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line></svg>
+      </button>
+    </div>
+  </div>
+
+  <button class="v-nav prev" id="vPrev" title="上一张（←）">
+    <svg viewBox="0 0 24 24"><polyline points="15,5 8,12 15,19"></polyline></svg>
+  </button>
+  <button class="v-nav next" id="vNext" title="下一张（→）">
+    <svg viewBox="0 0 24 24"><polyline points="9,5 16,12 9,19"></polyline></svg>
+  </button>
+
+  <div class="v-zoom" id="vZoom">100%</div>
+
+  <div class="v-bottom">
+    <div class="v-progress"><i id="vBar"></i></div>
+    <div class="v-foot">
+      <div class="v-info" id="vInfoLine"></div>
+      <div class="v-info" id="vHint">滚轮缩放 · 拖动平移 · 双击放大 · ←/→ 切换 · Esc 退出</div>
+    </div>
+  </div>
+</section>
+
+<div id="toast"></div>
+
+<script src="js/splash.js"></script>
+<script src="js/grid.js"></script>
+<script src="js/viewer.js"></script>
+<script src="js/video.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

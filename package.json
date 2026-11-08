@@ -1,0 +1,57 @@
+{
+  "name": "photo-album",
+  "version": "1.0.0",
+  "description": "Windows 桌面仿手机相册：照片与视频混排、全屏查看、本地索引",
+  "main": "main/main.js",
+  "author": "宇宙世界最强反派",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-packager . Album --platform=win32 --arch=x64 --out=dist --overwrite --icon=assets/app.ico",
+    "dist": "electron-builder --win nsis",
+    "dist:x64": "electron-builder --win nsis --x64 -c.artifactName=Album_Windows_x64_Setup.${ext}",
+    "dist:x86": "electron-builder --win nsis --ia32 -c.artifactName=Album_Windows_x86_Setup.${ext}",
+    "dist:arm64": "electron-builder --win nsis --arm64 -c.artifactName=Album_Windows_ARM64_Setup.${ext}"
+  },
+  "devDependencies": {
+    "electron": "38.2.2",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.local.photoalbum",
+    "productName": "Album",
+    "files": [
+      "main/**",
+      "renderer/**",
+      "assets/**",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/app.ico",
+      "target": [
+        "nsis"
+      ],
+      "executableName": "Album"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Album",
+      "menuCategory": false,
+      "deleteAppDataOnUninstall": false,
+      "installerLanguages": [
+        "zh_CN"
+      ],
+      "language": "2052",
+      "license": "LICENSE.txt"
+    },
+    "directories": {
+      "output": "C:/AI/Album"
+    },
+    "asar": true
+  }
+}
