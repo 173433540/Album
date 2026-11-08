@@ -19,16 +19,16 @@
 
 ## 安装包（多架构）
 
-安装包在本地构建，体积原因未纳入本仓库；执行 `npm run dist:x64`、`dist:x86`、`dist:arm64` 即可生成对应架构的安装文件，输出目录见 `package.json` 的 `build.directories.output`。下表记录的是本机实际构建并测试过的版本。
+安装包已上传到 [Releases · v1.0.0](https://github.com/173433540/Album/releases/tag/v1.0.0)，直接点击文件名下载；也可以按下面的命令自行构建：`npm run dist:x64`、`dist:x86`、`dist:arm64`，输出目录见 `package.json` 的 `build.directories.output`。
 
 | 安装包 | CPU 架构 | 适用系统 | 大小 | 实测情况 |
 | --- | --- | --- | --- | --- |
-| `Album_Windows_x64_Setup.exe` | x64 | Windows 10 / 11 64 位（Intel、AMD） | 91.0 MB | 已安装并运行通过 |
-| `Album_Windows_x86_Setup.exe` | x86（32 位） | Windows 10 32 位 | 85.8 MB | 已安装并运行通过（WOW64） |
-| `Album_Windows_ARM64_Setup.exe` | ARM64 | Windows 11 ARM64 | 87.0 MB | 已构建，未实机运行（见下） |
-| `Album_Windows_自动检测安装.exe` | 自动识别 | 全部 | 203 KB | 已运行验证识别结果 |
+| [`Album_Windows_x64_Setup.exe`](https://github.com/173433540/Album/releases/download/v1.0.0/Album_Windows_x64_Setup.exe) | x64 | Windows 10 / 11 64 位（Intel、AMD） | 91.0 MB | 已安装并运行通过 |
+| [`Album_Windows_x86_Setup.exe`](https://github.com/173433540/Album/releases/download/v1.0.0/Album_Windows_x86_Setup.exe) | x86（32 位） | Windows 10 32 位 | 85.8 MB | 已安装并运行通过（WOW64） |
+| [`Album_Windows_ARM64_Setup.exe`](https://github.com/173433540/Album/releases/download/v1.0.0/Album_Windows_ARM64_Setup.exe) | ARM64 | Windows 11 ARM64 | 87.0 MB | 已构建，未实机运行（见下） |
+| [`Album_Windows_AutoSetup.exe`](https://github.com/173433540/Album/releases/download/v1.0.0/Album_Windows_AutoSetup.exe) | 自动识别 | 全部 | 203 KB | 已运行验证识别结果 |
 
-**自动检测安装**：把四个 exe 放在同一个文件夹，双击 `Album_Windows_自动检测安装.exe`。它会读取系统版本与原生 CPU 架构（`IsWow64Process2`），选择对应安装包并弹窗确认；找不到匹配安装包或系统低于 Windows 10 时给出明确提示，不会强行安装。
+**自动检测安装**：把四个 exe 放在同一个文件夹，双击 `Album_Windows_AutoSetup.exe`（本机文件名是 `Album_Windows_自动检测安装.exe`）。它会读取系统版本与原生 CPU 架构（`IsWow64Process2`），选择对应安装包并弹窗确认；找不到匹配安装包或系统低于 Windows 10 时给出明确提示，不会强行安装。
 
 **安装与卸载**：双击安装包 → 选择安装目录（默认当前用户目录，无需管理员）→ 完成。桌面和开始菜单会生成「Album」快捷方式；卸载程序在安装目录里的 `Uninstall Album.exe`，卸载不会删除 `%APPDATA%\PhotoAlbum` 里的索引与设置。
 
